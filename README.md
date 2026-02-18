@@ -1,20 +1,20 @@
-﻿# Trust Game
+# Trust Game
 
 ![Maturity: draft](https://img.shields.io/badge/Maturity-draft-64748b?style=flat-square&labelColor=111827)
 
 | Field | Value |
 |---|---|
 | Name | Trust Game |
-| Version | v0.2.0-dev |
+| Version | v0.2.1-dev |
 | URL / Repository | https://github.com/TaskBeacon/T000024-trust-game |
 | Short Description | Investment vs keep decisions across partners with different return tendencies. |
 | Created By | TaskBeacon |
-| Date Updated | 2026-02-18 |
+| Date Updated | 2026-02-19 |
 | PsyFlow Version | 0.1.9 |
 | PsychoPy Version | 2025.1.1 |
 | Modality | Behavior |
-| Language | English |
-| Voice Name |  |
+| Language | Chinese |
+| Voice Name | zh-CN-YunyangNeural (voice disabled by default) |
 
 ## 1. Task Overview
 

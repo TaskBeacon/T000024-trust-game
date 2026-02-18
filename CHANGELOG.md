@@ -1,4 +1,13 @@
-﻿# CHANGELOG
+# CHANGELOG
+
+## [v0.2.1-dev] - 2026-02-19
+
+### Changed
+- Rebuilt literature bundle with task-relevant curated papers and regenerated reference artifacts.
+- Replaced corrupted `references/task_logic_audit.md` with a full state-machine audit.
+- Updated `references/stimulus_mapping.md` to concrete implemented stimulus IDs per condition.
+- Synced metadata (`README.md`, `taskbeacon.yaml`) with current configuration and evidence.
+
 
 All notable development changes for `T000024-trust-game` are documented here.
 
