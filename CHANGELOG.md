@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## [v0.2.2-dev] - 2026-02-19
+
+### Changed
+- Removed legacy MID-style runtime unit labels from trial data output:
+  - `cue/anticipation/target/decision_feedback/feedback` -> `partner_cue/pre_decision_fixation/decision/decision_confirmation/outcome_feedback`.
+- Updated trust-game timing keys in all configs:
+  - `partner_cue_duration`, `pre_decision_fixation_duration`, `decision_confirmation_duration`, `outcome_feedback_duration`.
+- Renamed trust-game cue/confirmation trigger keys in all configs:
+  - `*_partner_cue_onset`, `decision_confirmation_onset`.
+- Updated sampler responder to act on trust decision phases (`decision` / `trust_decision`) instead of legacy `target`.
+- Updated QA acceptance criteria column from `target_response` to `decision_response`.
+- Rewrote `references/task_logic_audit.md` and `references/stimulus_mapping.md` to literature-first trust-game descriptions and concrete mapping.
+- Synced `README.md`, `references/parameter_mapping.md`, and `taskbeacon.yaml` with the repaired naming scheme.
+
 ## [v0.2.1-dev] - 2026-02-19
 
 ### Changed

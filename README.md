@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Name | Trust Game |
-| Version | v0.2.1-dev |
+| Version | v0.2.2-dev |
 | URL / Repository | https://github.com/TaskBeacon/T000024-trust-game |
 | Short Description | Investment vs keep decisions across partners with different return tendencies. |
 | Created By | TaskBeacon |
@@ -55,10 +55,10 @@ This task implements a standard Trust Game from the investor perspective. On eac
 |---|---|
 | `partner_cue` | Partner cue stage. |
 | `pre_decision_fixation` | Fixation before choice. |
-| `trust_decision` | Invest/keep decision stage. |
+| `decision` | Invest/keep decision stage. |
 | `decision_confirmation` | Decision confirmation stage. |
 | `outcome_feedback` | Trial outcome feedback stage. |
-| `inter_trial_interval` | ITI stage. |
+| `iti` | ITI stage. |
 
 ## 3. Configuration Summary
 
@@ -99,10 +99,10 @@ This task implements a standard Trust Game from the investor perspective. On eac
 |---|---|
 | partner_cue | 0.6 s |
 | pre_decision_fixation | 0.6 s |
-| trust_decision | 2.0 s |
+| decision | 2.0 s |
 | decision_confirmation | 0.5 s |
 | outcome_feedback | 1.0 s |
-| inter_trial_interval | 0.8 s |
+| iti | 0.8 s |
 
 ## 4. Methods (for academic publication)
 

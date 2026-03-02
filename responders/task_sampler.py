@@ -75,8 +75,9 @@ class TaskSamplerResponder:
                 meta={"source": "task_sampler", "policy": "continue"},
             )
 
-        if str(obs.phase or "") != "target":
-            return Action(key=None, rt_s=None, meta={"source": "task_sampler", "phase": str(obs.phase or "")})
+        phase = str(obs.phase or "")
+        if phase not in {"decision", "trust_decision"}:
+            return Action(key=None, rt_s=None, meta={"source": "task_sampler", "phase": phase})
 
         factors = dict(obs.task_factors or {})
         return_ratio = float(factors.get("return_ratio", 0.33))

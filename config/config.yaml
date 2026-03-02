@@ -54,11 +54,11 @@ task:
   voice_name: zh-CN-YunyangNeural
   voice_enabled: false
 timing:
-  cue_duration: 0.6
-  anticipation_duration: 0.6
+  partner_cue_duration: 0.6
+  pre_decision_fixation_duration: 0.6
   decision_duration: 2.0
-  decision_feedback_duration: 0.5
-  feedback_duration: 1.0
+  decision_confirmation_duration: 0.5
+  outcome_feedback_duration: 1.0
   iti_duration: 0.8
 stimuli:
   fixation:
@@ -186,15 +186,15 @@ triggers:
     exp_end: 2
     block_onset: 10
     block_end: 11
-    high_trust_cue_onset: 20
-    medium_trust_cue_onset: 21
-    low_trust_cue_onset: 22
+    high_trust_partner_cue_onset: 20
+    medium_trust_partner_cue_onset: 21
+    low_trust_partner_cue_onset: 22
     high_trust_decision_onset: 30
     medium_trust_decision_onset: 31
     low_trust_decision_onset: 32
     decision_response: 50
     decision_timeout: 51
-    decision_feedback_onset: 52
+    decision_confirmation_onset: 52
     outcome_feedback_onset: 53
     iti_onset: 60
   driver:
