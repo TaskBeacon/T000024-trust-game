@@ -7,16 +7,16 @@
 
 ## Selected Papers
 
-| ID | Year | Citations | Journal | High Impact | Title |
-|---|---:|---:|---|---|---|
-| W2138559331 | 2005 | 3635 | Nature | yes | Oxytocin increases trust in humans |
-| W4384071683 | 2023 | 2567 | Nature | yes | Large language models encode clinical knowledge |
-| W2098425678 | 2006 | 1720 | Nature | yes | Empathic neural responses are modulated by the perceived fairness of others |
-| W3038067977 | 2002 | 8069 | Reviews of Modern Physics | no | Quantum cryptography |
-| W2024046085 | 2000 | 6860 | The Annals of Statistics | no | Additive logistic regression: a statistical view of boosting (With discussion and a rejoinder by the authors) |
-| W2753514269 | 2009 | 6410 | Journal of Natural Resources Policy Research | no | The Tragedy of the Commons* |
+| ID | Year | Citations | Journal | High Impact | Open Access | Title |
+|---|---:|---:|---|---|---|---|
+| W2138559331 | 2005 | 3635 | Nature | yes | yes | Oxytocin increases trust in humans |
+| W4384071683 | 2023 | 2567 | Nature | yes | yes | Large language models encode clinical knowledge |
+| W2098425678 | 2006 | 1720 | Nature | yes | yes | Empathic neural responses are modulated by the perceived fairness of others |
+| W3038067977 | 2002 | 8069 | Reviews of Modern Physics | no | yes | Quantum cryptography |
+| W2024046085 | 2000 | 6860 | The Annals of Statistics | no | yes | Additive logistic regression: a statistical view of boosting (With discussion and a rejoinder by the authors) |
+| W2753514269 | 2009 | 6410 | Journal of Natural Resources Policy Research | no | yes | The Tragedy of the Commons* |
 
 ## Notes
 
-- Paywalled papers were skipped by policy.
-- Any unresolved protocol values are documented as `inferred` in `parameter_mapping.md`.
+- Open-access and citation metadata are synchronized from `references/references.yaml`.
+- Any inferred protocol choices are documented in `references/parameter_mapping.md` and `references/task_logic_audit.md`.

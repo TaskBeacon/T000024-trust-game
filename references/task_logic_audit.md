@@ -1,117 +1,149 @@
-# Task Logic Audit: Trust Game
+# Task Logic Audit: Trust Game (T000024)
 
 ## 1. Paradigm Intent
 
-- Task: `trust_game` (investor-role trust game).
-- Research construct: willingness to trust a partner under uncertainty about reciprocal return.
-- Manipulated factor in this implementation: partner return tendency (`high_trust`, `medium_trust`, `low_trust`).
-- Trial choice:
-  - `invest` (send full endowment to partner)
-  - `keep` (keep full endowment)
-- Key references used for paradigm-level grounding:
-  - `W2138559331`
-  - `W2098425678`
-  - `W3038067977`
+- Task: `trust_game`
+- Primary construct: interpersonal trust under uncertain reciprocity in the investor role.
+- Manipulated factors: partner return tendency (`high_trust`, `medium_trust`, `low_trust`).
+- Dependent measures: trust rate, decision response time, invested amount, returned amount, trial earnings, cumulative earnings.
+- Key citations: `W2138559331`, `W2098425678`.
 
-## 2. Block and Trial Workflow
+## 2. Block/Trial Workflow
 
 ### Block Structure
 
-- Total blocks: `3`
-- Trials per block: `24`
-- Total trials: `72`
-- Block scheduling: `Controller.prepare_block(...)` builds a shuffled schedule over partner profiles.
+- Total blocks: `3` in human mode; `1` in QA/sim modes.
+- Trials per block: `24` in human mode; `9` in QA/sim modes.
+- Randomization/counterbalancing: `Controller.prepare_block(...)` balances condition counts then shuffles trial order with seeded RNG.
+- Condition generation method:
+  - Custom generator in `Controller.prepare_block(...)`.
+  - Reason: each trial payload includes partner label, return ratio, and stable `condition_id` required for audit tracing.
+  - Data shape passed into `run_trial.py`: `(condition, partner_label, return_ratio, condition_id, trial_index)`.
+- Runtime-generated trial values:
+  - Generated in `run_trial.py`: trust/keep/timeout state, choice label, and resolved payoff fields from controller.
+  - Determinism/reproducibility: controller uses seeded RNG (`controller.seed`), and sim responders are seed-driven via config.
 
-### Trial State Machine (Implemented)
+### Trial State Machine
 
 1. `partner_cue`
-   - Participant sees current partner type (`本轮对手：{partner_label}`).
-   - Trigger: condition-specific cue onset (`high_trust_partner_cue_onset`, `medium_trust_partner_cue_onset`, `low_trust_partner_cue_onset`).
-   - Duration: `timing.partner_cue_duration` (fallback-compatible with legacy `cue_duration`).
-   - Response: none.
+   - Onset trigger: `{condition}_partner_cue_onset`
+   - Stimuli shown: `partner_cue`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `pre_decision_fixation`
 2. `pre_decision_fixation`
-   - Participant sees fixation (`+`) before decision.
-   - Trigger: no dedicated marker in current map.
-   - Duration: `timing.pre_decision_fixation_duration` (fallback-compatible with legacy `anticipation_duration`).
-   - Response: none.
-3. `decision`
-   - Participant chooses invest (`f`) or keep (`j`) on the decision panel.
-   - Trigger: condition-specific decision onset and response/timeout markers.
-   - Duration: `timing.decision_duration`.
-   - Timeout policy: timeout is treated as keep (no investment).
+   - Onset trigger: optional `{condition}_pre_decision_fixation_onset` (not defined in current trigger map)
+   - Stimuli shown: `fixation`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `trust_decision`
+3. `trust_decision`
+   - Onset trigger: `{condition}_decision_onset`
+   - Stimuli shown: `decision_panel`
+   - Valid keys: invest key and keep key from `task.key_list`
+   - Timeout behavior: timeout emits `decision_timeout` and is handled as keep
+   - Next state: `decision_confirmation`
 4. `decision_confirmation`
-   - Participant sees immediate choice confirmation (`投资` / `保留` / timeout).
-   - Trigger: `decision_confirmation_onset` (fallback-compatible with legacy `decision_feedback_onset`).
-   - Duration: `timing.decision_confirmation_duration` (fallback-compatible with legacy `decision_feedback_duration`).
-   - Response: none.
+   - Onset trigger: `decision_confirmation_onset`
+   - Stimuli shown: one of `decision_invest`, `decision_keep`, `decision_timeout`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `outcome_feedback`
 5. `outcome_feedback`
-   - Participant sees invested amount, multiplied amount, returned amount, and cumulative earnings.
-   - Trigger: `outcome_feedback_onset`.
-   - Duration: `timing.outcome_feedback_duration` (fallback-compatible with legacy `feedback_duration`).
-   - Response: none.
-6. `iti`
-   - Participant sees fixation before next trial.
-   - Trigger: `iti_onset`.
-   - Duration: `timing.iti_duration`.
-   - Response: none.
+   - Onset trigger: `outcome_feedback_onset`
+   - Stimuli shown: `outcome_feedback`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `inter_trial_interval`
+6. `inter_trial_interval`
+   - Onset trigger: `iti_onset`
+   - Stimuli shown: `fixation`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: next trial or block end
 
 ## 3. Condition Semantics
 
-- `high_trust`
-  - Partner profile label: high-return partner.
-  - Return ratio: `0.6` of multiplied investment (plus optional bounded noise).
-- `medium_trust`
-  - Partner profile label: medium-return partner.
-  - Return ratio: `0.4`.
-- `low_trust`
-  - Partner profile label: low-return partner.
-  - Return ratio: `0.2`.
+- Condition ID: `high_trust`
+- Participant-facing meaning: partner with high expected reciprocity.
+- Concrete stimulus realization (visual/audio): `partner_label` displayed in `partner_cue`; controller uses `return_ratio=0.6`.
+- Outcome rules: investing sends full endowment, multiplied by configured multiplier, then larger expected return.
 
-## 4. Response, Timeout, and Scoring Rules
+- Condition ID: `medium_trust`
+- Participant-facing meaning: partner with medium expected reciprocity.
+- Concrete stimulus realization (visual/audio): `partner_label` displayed in `partner_cue`; controller uses `return_ratio=0.4`.
+- Outcome rules: same payoff mechanics with medium expected return.
 
-- Endowment per trial: `10` points.
-- Transfer multiplier: `3.0`.
-- Choice mapping:
-  - `f` -> invest full endowment
-  - `j` -> keep full endowment
-- Timeout handling:
-  - timeout => treated as keep (invested amount = 0).
-- Outcome computation (`Controller.resolve_outcome`):
-  - `invested = endowment` if invest else `0`
-  - `multiplied_amount = invested * transfer_multiplier`
-  - `returned = round(multiplied_amount * return_ratio + noise)`
-  - `earned = endowment - invested + returned`
-- Cumulative metric:
-  - `total_earned` accumulates across trials and is shown in block/end summaries.
+- Condition ID: `low_trust`
+- Participant-facing meaning: partner with low expected reciprocity.
+- Concrete stimulus realization (visual/audio): `partner_label` displayed in `partner_cue`; controller uses `return_ratio=0.2`.
+- Outcome rules: same payoff mechanics with lower expected return.
+
+Also document where participant-facing condition text/stimuli are defined:
+
+- Participant-facing text source (config stimuli / code formatting / generated assets): config-defined text templates in `config/*.yaml`, populated via `stim_bank.get_and_format(...)`.
+- Why this source is appropriate for auditability: all participant wording and layout parameters are centralized in config artifacts.
+- Localization strategy (how language variants are swapped via config without code edits): language-specific config files can replace stimulus text while keeping `src/run_trial.py` unchanged.
+
+## 4. Response and Scoring Rules
+
+- Response mapping: first key in `task.key_list` = invest; second key = keep.
+- Response key source (config field vs code constant): config (`task.key_list`).
+- If code-defined, why config-driven mapping is not sufficient: not applicable.
+- Missing-response policy: timeout in decision phase is treated as keep (no investment).
+- Correctness logic: no objective correct answer; behavior reflects trust preference.
+- Reward/penalty updates:
+  - invest: `invested=endowment`, `multiplied=endowment*transfer_multiplier`, returned amount depends on condition return ratio.
+  - keep/timeout: `invested=0`, participant keeps endowment.
+- Running metrics: controller tracks per-trial outcome fields and cumulative `total_earned`.
 
 ## 5. Stimulus Layout Plan
 
-- All participant-facing text screens (`instruction_text`, `partner_cue`, `decision_panel`, `outcome_feedback`, `block_break`, `good_bye`) are center-aligned text stimuli with `wrapWidth=980` and `font=SimHei`.
-- Decision screen presents two explicit options (left invest, right keep) in stable positions to preserve key-option consistency.
-- `fixation` is centrally presented and reused for pre-decision and ITI phases.
+For every screen with multiple simultaneous options/stimuli:
+
+- Screen name: `trust_decision`
+- Stimulus IDs shown together: `decision_panel` (single multiline panel with left/right options)
+- Layout anchors (`pos`): centered text anchor
+- Size/spacing (`height`, width, wrap): `height=38`, `wrapWidth=980`
+- Readability/overlap checks: QA validation run confirms full visibility at `1280x720`
+- Rationale: single centered panel keeps decision options explicit while minimizing visual clutter
+
+- Screen name: `outcome_feedback`
+- Stimulus IDs shown together: `outcome_feedback` (single multiline payoff summary)
+- Layout anchors (`pos`): centered text anchor
+- Size/spacing (`height`, width, wrap): `height=34`, `wrapWidth=980`
+- Readability/overlap checks: QA validation run confirms no clipping at `1280x720`
+- Rationale: compact, auditable summary of trial and cumulative outcomes
 
 ## 6. Trigger Plan
 
-| Trigger | Code | Meaning |
-|---|---:|---|
-| `exp_onset` | 1 | Task start marker |
-| `exp_end` | 2 | Task end marker |
-| `block_onset` | 10 | Block start |
-| `block_end` | 11 | Block end |
-| `high_trust_partner_cue_onset` | 20 | High-trust partner cue onset |
-| `medium_trust_partner_cue_onset` | 21 | Medium-trust partner cue onset |
-| `low_trust_partner_cue_onset` | 22 | Low-trust partner cue onset |
-| `high_trust_decision_onset` | 30 | High-trust decision onset |
-| `medium_trust_decision_onset` | 31 | Medium-trust decision onset |
-| `low_trust_decision_onset` | 32 | Low-trust decision onset |
-| `decision_response` | 50 | Decision response captured |
-| `decision_timeout` | 51 | Decision timeout |
-| `decision_confirmation_onset` | 52 | Decision-confirmation onset |
-| `outcome_feedback_onset` | 53 | Outcome feedback onset |
-| `iti_onset` | 60 | ITI onset |
+- Experiment boundaries: `exp_onset=1`, `exp_end=2`
+- Block boundaries: `block_onset=10`, `block_end=11`
+- Partner cue onsets: `high_trust=20`, `medium_trust=21`, `low_trust=22`
+- Trust decision onsets: `high_trust=30`, `medium_trust=31`, `low_trust=32`
+- Decision events: `decision_response=50`, `decision_timeout=51`, `decision_confirmation_onset=52`
+- Outcome and pacing: `outcome_feedback_onset=53`, `iti_onset=60`
 
-## 7. Inference Log
+## 7. Architecture Decisions (Auditability)
 
-- Selected references define trust-game structure but do not prescribe a single fixed runtime timing set; current phase durations are inferred implementation parameters.
-- Deterministic partner return ratios (`0.6/0.4/0.2`) with optional bounded noise are implementation-level operationalization for reproducible behavioral sampling.
-- Legacy MID-style output labels (`target_response`, `decision_feedback_*`) were removed from active runtime units in favor of trust-game-specific stage labeling.
+- `main.py` runtime flow style (simple single flow / helper-heavy / why): simple mode-aware single flow for transparent execution (`human|qa|sim`).
+- `utils.py` used? (yes/no): yes.
+- If yes, exact purpose (adaptive controller / sequence generation / asset pool / other): sequence generation and payoff bookkeeping for partner-profile trust outcomes.
+- Custom controller used? (yes/no): yes.
+- If yes, why PsyFlow-native path is insufficient: condition payload must include profile metadata and deterministic outcome computation with optional noise.
+- Legacy/backward-compatibility fallback logic required? (yes/no): no.
+- If yes, scope and removal plan: not applicable.
+
+## 8. Inference Log
+
+- Decision: model trust choice as all-or-none investment (full invest vs full keep).
+- Why inference was required: selected references vary in exact transfer menus and interaction structure.
+- Citation-supported rationale: investor trust decision and reciprocal return mechanism are core across trust-game paradigms (`W2138559331`).
+
+- Decision: use three fixed partner-return profiles (`0.6/0.4/0.2`).
+- Why inference was required: literature reports heterogeneous reciprocity distributions and manipulations.
+- Citation-supported rationale: condition-dependent reciprocity expectations are central to trust-behavior modulation in trust-game tasks.
+
+- Decision: timeout is treated as keep.
+- Why inference was required: non-response handling is not uniformly specified in reported paradigms.
+- Citation-supported rationale: keep-equivalent timeout preserves deterministic payoff accounting for computerized fixed-window trials.

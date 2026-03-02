@@ -1,15 +1,22 @@
 # Stimulus Mapping
 
-Task: `Trust Game`
+## Mapping Table
 
-| Condition | Implemented Stimulus IDs | Source Paper ID | Evidence Type | Implementation Mode | Notes |
-|---|---|---|---|---|---|
-| `high_trust` | `partner_cue`, `decision_panel`, `decision_invest`, `decision_keep`, `decision_timeout`, `outcome_feedback`, `fixation` | `W2138559331` | Trust-game investor decision and reciprocal return outcome (paradigm-level) | `psychopy_builtin` | Partner profile uses higher return ratio (`0.6`). |
-| `medium_trust` | `partner_cue`, `decision_panel`, `decision_invest`, `decision_keep`, `decision_timeout`, `outcome_feedback`, `fixation` | `W2138559331` | Trust-game investor decision and reciprocal return outcome (paradigm-level) | `psychopy_builtin` | Partner profile uses medium return ratio (`0.4`). |
-| `low_trust` | `partner_cue`, `decision_panel`, `decision_invest`, `decision_keep`, `decision_timeout`, `outcome_feedback`, `fixation` | `W2138559331` | Trust-game investor decision and reciprocal return outcome (paradigm-level) | `psychopy_builtin` | Partner profile uses lower return ratio (`0.2`). |
-| `all_conditions` | `instruction_text`, `block_break`, `good_bye`, `fixation` | `W2098425678` | Shared instructions, transitions, and cumulative payoff display | `psychopy_builtin` | Chinese participant-facing envelope across human/qa/sim configs. |
-
-Implementation mode legend:
-- `psychopy_builtin`: stimulus rendered with PsychoPy text primitives configured in YAML.
-- `generated_reference_asset`: task-specific generated assets from literature-described rules.
-- `licensed_external_asset`: external licensed media with citation linkage.
+| Condition | Stage/Phase | Stimulus IDs | Participant-Facing Content | Source Paper ID | Evidence (quote/figure/table) | Implementation Mode | Asset References | Notes |
+|---|---|---|---|---|---|---|---|---|
+| `high_trust` | `partner_cue` | `partner_cue` | Shows high-return partner label before choice. | `W2138559331` | Trust decision depends on partner expectation. | `psychopy_builtin` | `config/*.yaml -> stimuli.partner_cue` | `{partner_label}` injected from condition profile. |
+| `high_trust` | `trust_decision` | `decision_panel` | Binary choice: invest all endowment or keep all. | `W2138559331` | Investor chooses whether to trust partner. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_panel` | Uses configured key mapping taught in instructions. |
+| `high_trust` | `decision_confirmation` | `decision_invest`, `decision_keep`, `decision_timeout` | Immediate confirmation of invest/keep/timeout outcome. | `W2138559331` | Post-choice acknowledgement stage. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_*` | Runtime selects one confirmation stimulus. |
+| `high_trust` | `outcome_feedback` | `outcome_feedback` | Displays invested amount, multiplied amount, returned amount, and cumulative earnings. | `W2138559331` | Investor receives return-dependent payoff feedback. | `psychopy_builtin` | `config/*.yaml -> stimuli.outcome_feedback` | Dynamic numeric fields formatted at runtime. |
+| `medium_trust` | `partner_cue` | `partner_cue` | Shows medium-return partner label before choice. | `W2138559331` | Trust decision depends on partner expectation. | `psychopy_builtin` | `config/*.yaml -> stimuli.partner_cue` | `{partner_label}` injected from condition profile. |
+| `medium_trust` | `trust_decision` | `decision_panel` | Binary choice: invest all endowment or keep all. | `W2138559331` | Investor chooses whether to trust partner. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_panel` | Same decision panel across conditions. |
+| `medium_trust` | `decision_confirmation` | `decision_invest`, `decision_keep`, `decision_timeout` | Immediate confirmation of invest/keep/timeout outcome. | `W2138559331` | Post-choice acknowledgement stage. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_*` | Runtime selects one confirmation stimulus. |
+| `medium_trust` | `outcome_feedback` | `outcome_feedback` | Displays invested amount, multiplied amount, returned amount, and cumulative earnings. | `W2138559331` | Investor receives return-dependent payoff feedback. | `psychopy_builtin` | `config/*.yaml -> stimuli.outcome_feedback` | Dynamic numeric fields formatted at runtime. |
+| `low_trust` | `partner_cue` | `partner_cue` | Shows low-return partner label before choice. | `W2138559331` | Trust decision depends on partner expectation. | `psychopy_builtin` | `config/*.yaml -> stimuli.partner_cue` | `{partner_label}` injected from condition profile. |
+| `low_trust` | `trust_decision` | `decision_panel` | Binary choice: invest all endowment or keep all. | `W2138559331` | Investor chooses whether to trust partner. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_panel` | Same decision panel across conditions. |
+| `low_trust` | `decision_confirmation` | `decision_invest`, `decision_keep`, `decision_timeout` | Immediate confirmation of invest/keep/timeout outcome. | `W2138559331` | Post-choice acknowledgement stage. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_*` | Runtime selects one confirmation stimulus. |
+| `low_trust` | `outcome_feedback` | `outcome_feedback` | Displays invested amount, multiplied amount, returned amount, and cumulative earnings. | `W2138559331` | Investor receives return-dependent payoff feedback. | `psychopy_builtin` | `config/*.yaml -> stimuli.outcome_feedback` | Dynamic numeric fields formatted at runtime. |
+| `all` | `pre_decision_fixation` | `fixation` | Center fixation shown before decision and during ITI. | `W2138559331` | Standard inter-phase fixation in computerized task flow. | `psychopy_builtin` | `config/*.yaml -> stimuli.fixation` | Shared across all conditions. |
+| `all` | `instruction` | `instruction_text` | Explains trust-game rules, choice options, and response keys. | `W2138559331` | Investor role and payoff mapping must be understood before trials. | `psychopy_builtin` | `config/*.yaml -> stimuli.instruction_text` | Localization-ready text stored in config. |
+| `all` | `block_break` | `block_break` | Block-level trust rate and earnings summary. | `inferred` | Practical flow-control screen for multi-block sessions. | `psychopy_builtin` | `config/*.yaml -> stimuli.block_break` | Non-paradigm control screen. |
+| `all` | `goodbye` | `good_bye` | End screen showing final cumulative earnings. | `inferred` | Practical session termination screen. | `psychopy_builtin` | `config/*.yaml -> stimuli.good_bye` | Non-paradigm control screen. |

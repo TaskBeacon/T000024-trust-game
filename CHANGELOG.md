@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## [v0.2.3-dev] - 2026-03-02
+
+### Changed
+- Standardized `main.py` into the single-flow task runtime pattern used by current task-build outputs (shared `run(options)` path with QA/sim runtime context handling).
+- Repaired `src/run_trial.py` phase and timing usage to trust-game naming only:
+  - removed residual MID-style stage naming,
+  - aligned durations to `partner_cue_duration`, `pre_decision_fixation_duration`, `decision_confirmation_duration`, `outcome_feedback_duration`.
+- Kept decision response data under `decision` unit labels to preserve QA artifact compatibility (`decision_response`).
+- Replaced code-side localized decision labels with neutral semantic tokens (`invest`, `keep`, `timeout`) so participant-facing language stays config-driven.
+- Updated references artifacts to pass the current contract schema:
+  - added required `## Mapping Table` sections and required table columns in mapping docs,
+  - aligned `task_logic_audit.md` headings to required `## 1`..`## 8` structure,
+  - aligned `references.md` column schema.
+
+### Validation
+- `python -m py_compile main.py src/run_trial.py`
+- `python -m psyflow.validate e:/Taskbeacon/T000024-trust-game`
+- `psyflow-qa e:/Taskbeacon/T000024-trust-game --no-maturity-update`
+- `python main.py sim --config config/config_scripted_sim.yaml`
+- `python main.py sim --config config/config_sampler_sim.yaml`
+
 ## [v0.2.2-dev] - 2026-02-19
 
 ### Changed
