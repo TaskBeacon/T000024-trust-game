@@ -22,6 +22,8 @@ This task implements a standard Trust Game from the investor perspective. On eac
 
 ## 2. Task Flow
 
+![Task Flow](task_flow.png)
+
 ### Block-Level Flow
 
 | Step | Description |
