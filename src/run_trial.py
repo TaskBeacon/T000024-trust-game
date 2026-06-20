@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import Any
 
-from psyflow import StimUnit, set_trial_context
+from psyflow import StimUnit, next_trial_id, set_trial_context
 
 
 def _deadline_s(value: Any) -> float | None:
@@ -60,11 +60,13 @@ def run_trial(
     """Run one Trust Game trial."""
     parsed = _parse_condition(condition)
     block_idx_val = int(block_idx) if block_idx is not None else 0
-    trial_id = int(parsed["trial_index"]) if parsed["trial_index"] > 0 else 1
+    trial_index = int(parsed["trial_index"]) if parsed["trial_index"] > 0 else 1
+    trial_id = next_trial_id()
     trust_key, keep_key = list(settings.key_list)
 
     trial_data = {
         "trial_id": trial_id,
+        "trial_index": trial_index,
         "block_id": str(block_id) if block_id is not None else "block_0",
         "block_idx": block_idx_val,
         "condition": parsed["condition"],
@@ -161,21 +163,20 @@ def run_trial(
     trusted = bool(response == trust_key)
     kept = bool(response == keep_key)
     timed_out = not (trusted or kept)
-    if timed_out:
-        kept = True
-        trusted = False
 
     choice_label = "invest" if trusted else "keep" if kept else "timeout"
 
     outcome = controller.resolve_outcome(
         condition=parsed["condition"],
         block_idx=block_idx_val,
-        trial_index=trial_id,
+        trial_index=trial_index,
         trusted=trusted,
         timed_out=timed_out,
     )
 
-    decision_confirmation_stim_id = "decision_invest" if trusted else "decision_keep" if kept else "decision_timeout"
+    decision_confirmation_stim_id = (
+        "decision_timeout" if timed_out else "decision_invest" if trusted else "decision_keep"
+    )
     decision_confirmation = make_unit(unit_label="decision_confirmation").add_stim(
         stim_bank.get_and_format(decision_confirmation_stim_id, choice_label=choice_label)
     )

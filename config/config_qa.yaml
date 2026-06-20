@@ -170,6 +170,9 @@ triggers:
     high_trust_partner_cue_onset: 20
     medium_trust_partner_cue_onset: 21
     low_trust_partner_cue_onset: 22
+    high_trust_pre_decision_fixation_onset: 23
+    medium_trust_pre_decision_fixation_onset: 24
+    low_trust_pre_decision_fixation_onset: 25
     high_trust_decision_onset: 30
     medium_trust_decision_onset: 31
     low_trust_decision_onset: 32
