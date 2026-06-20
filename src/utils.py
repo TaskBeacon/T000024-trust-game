@@ -160,3 +160,33 @@ class Controller:
             )
 
         return record
+
+
+def parse_trust_condition(condition: Any) -> dict[str, Any]:
+    """Decode a scheduled Trust Game condition."""
+    if isinstance(condition, tuple) and len(condition) >= 5:
+        name, partner_label, return_ratio, condition_id, trial_index, *_ = condition
+        return {
+            "condition": str(name),
+            "partner_label": str(partner_label),
+            "return_ratio": float(return_ratio),
+            "condition_id": str(condition_id),
+            "trial_index": int(trial_index),
+        }
+
+    if isinstance(condition, dict):
+        return {
+            "condition": str(condition.get("condition", "medium_trust")),
+            "partner_label": str(condition.get("partner_label", "Partner")),
+            "return_ratio": float(condition.get("return_ratio", 0.4)),
+            "condition_id": str(condition.get("condition_id", "unknown")),
+            "trial_index": int(condition.get("trial_index", 0)),
+        }
+
+    return {
+        "condition": str(condition),
+        "partner_label": str(condition),
+        "return_ratio": 0.4,
+        "condition_id": str(condition),
+        "trial_index": 0,
+    }
